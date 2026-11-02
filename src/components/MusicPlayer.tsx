@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Music, Pause, Volume1, Volume2, VolumeX } from 'lucide-react'
 import { useMusic } from '../hooks/useMusic'
+import { wedding } from '../config/wedding'
 
 /** Music toggle (play/pause) + volume popover. State lives in the shared engine, so it survives navigation. */
 export function MusicPlayer() {
@@ -46,6 +47,14 @@ export function MusicPlayer() {
 
       {open && (
         <div role="dialog" aria-label="Volume" className="absolute right-0 top-12 z-50 w-56 rounded-2xl border border-gold/50 bg-maroon/95 p-4 text-left shadow-card backdrop-blur">
+          <div className="mb-2.5 pb-2 border-b border-gold/20">
+            <span className="block font-serif text-xs font-semibold text-gold truncate" title={wedding.music.title}>
+              {wedding.music.title}
+            </span>
+            <span className="block font-body text-[11px] text-champagne/80">
+              {playing ? '♪ Now Playing' : 'Paused'}
+            </span>
+          </div>
           <label htmlFor="music-volume" className="mb-2 block font-body text-xs font-medium text-champagne">Volume · {Math.round(volume * 100)}%</label>
           <input
             id="music-volume" type="range" min={0} max={1} step={0.05} value={volume}

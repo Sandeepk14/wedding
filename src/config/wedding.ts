@@ -146,7 +146,8 @@ export const wedding = {
   ] as GalleryPhoto[],
 
   music: {
-    src: '/assets/music/wedding-instrumental.mp3',
+    title: 'Aaj Se Teri – Padman',
+    src: '/assets/music/aaj-se-teri.mp3',
   },
 
   rsvp: {
