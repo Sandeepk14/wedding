@@ -25,7 +25,7 @@ const VOLUME_KEY = 'wedding-music-volume'
 function readVolume(): number {
   try {
     const v = parseFloat(localStorage.getItem(VOLUME_KEY) ?? '')
-    if (!Number.isNaN(v)) return Math.min(1, Math.max(0, v))
+    if (!Number.isNaN(v) && v > 0.05) return Math.min(1, Math.max(0, v))
   } catch { /* storage blocked */ }
   return 0.5
 }
@@ -41,11 +41,14 @@ export function useMusicEngine(src: string): MusicController {
     if (!audioRef.current) {
       const a = new Audio()
       a.loop = true
-      a.preload = 'none'
+      a.preload = 'auto'
       a.volume = readVolume()
       a.addEventListener('error', () => {
-        setStatus('unavailable') // file missing / unsupported → fail silently
+        setStatus('unavailable')
         setPlaying(false)
+      })
+      a.addEventListener('canplay', () => {
+        setStatus('ready')
       })
       a.addEventListener('playing', () => { setStatus('ready'); setPlaying(true) })
       a.addEventListener('pause', () => setPlaying(false))
@@ -57,11 +60,21 @@ export function useMusicEngine(src: string): MusicController {
 
   const start = useCallback(async () => {
     try {
-      await getAudio().play()
+      const a = getAudio()
+      if (a.error) {
+        a.src = src
+        a.load()
+      }
+      if (a.volume <= 0.05) {
+        const v = 0.5
+        a.volume = v
+        setVolumeState(v)
+      }
+      await a.play()
     } catch {
       /* autoplay blocked or file missing – handled by events */
     }
-  }, [getAudio])
+  }, [getAudio, src])
 
   const toggle = useCallback(async () => {
     const a = getAudio()
