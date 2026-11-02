@@ -61,20 +61,19 @@ export function useMusicEngine(src: string): MusicController {
   const start = useCallback(async () => {
     try {
       const a = getAudio()
-      if (a.error) {
-        a.src = src
-        a.load()
-      }
       if (a.volume <= 0.05) {
         const v = 0.5
         a.volume = v
         setVolumeState(v)
       }
-      await a.play()
-    } catch {
-      /* autoplay blocked or file missing – handled by events */
+      const p = a.play()
+      if (p !== undefined) {
+        await p
+      }
+    } catch (err) {
+      console.warn('Playback deferred or blocked:', err)
     }
-  }, [getAudio, src])
+  }, [getAudio])
 
   const toggle = useCallback(async () => {
     const a = getAudio()
@@ -88,7 +87,11 @@ export function useMusicEngine(src: string): MusicController {
     try { localStorage.setItem(VOLUME_KEY, String(v)) } catch { /* ignore */ }
   }, [])
 
-  useEffect(() => () => { audioRef.current?.pause() }, [])
+  useEffect(() => {
+    const a = getAudio()
+    a.load()
+    return () => { a.pause() }
+  }, [getAudio])
 
   return { playing, volume, status, start, toggle, setVolume }
 }

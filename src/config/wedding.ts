@@ -147,7 +147,7 @@ export const wedding = {
 
   music: {
     title: 'Aaj Se Teri – Padman',
-    src: '/assets/music/aaj-se-teri.mp3',
+    src: '/assets/music/aaj-se-teri.mp3?v=20261102',
   },
 
   rsvp: {

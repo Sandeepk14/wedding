@@ -31,6 +31,19 @@ export default function App() {
     setCurtain('closing')
   }, [music])
 
+  useEffect(() => {
+    // Start playback on the very first tap or click anywhere on the page
+    const unlockAudio = () => {
+      void music.start()
+    }
+    window.addEventListener('click', unlockAudio, { once: true })
+    window.addEventListener('touchstart', unlockAudio, { once: true })
+    return () => {
+      window.removeEventListener('click', unlockAudio)
+      window.removeEventListener('touchstart', unlockAudio)
+    }
+  }, [music])
+
   useEffect(() => { if (stage === 'site') window.scrollTo(0, 0) }, [stage])
 
   return (
